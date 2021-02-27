@@ -17,18 +17,23 @@ class CurrentWeatherViewController: UIViewController {
         return label
     }()
     
-    var presenter: CurrentWeatherViewPresenterProtocol!
+    private var button: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .blue
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    weak var presenter: CurrentWeatherViewPresenterProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.presenter.showCurrentWeather()
-        
         setLayout()
         view.backgroundColor = .white
     }
     
-    func setLayout() {
+    private func setLayout() {
         view.addSubview(label)
         NSLayoutConstraint.activate([
             label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
@@ -36,11 +41,27 @@ class CurrentWeatherViewController: UIViewController {
             label.widthAnchor.constraint(equalToConstant: 100),
             label.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
+        view.addSubview(button)
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 20),
+            button.widthAnchor.constraint(equalToConstant: 100),
+            button.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    @objc private func buttonTapped() {
+        presenter?.showCurrentWeather()
     }
 }
 
 extension CurrentWeatherViewController: CurrentWeatherViewProtocol {
-    func setCurrentWeather(weather: String) {
-        self.label.text = weather
+    func success() {
+        label.text = presenter?.currentWeather?.name
+    }
+    
+    func failure(error: Error) {
+        print(error.localizedDescription)
     }
 }

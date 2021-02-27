@@ -8,25 +8,40 @@
 import Foundation
 
 protocol CurrentWeatherViewProtocol: class {
-    func setCurrentWeather(weather: String)
+    func success() //данные пришли
+    func failure(error: Error) //данные не пришли
 }
 
 protocol CurrentWeatherViewPresenterProtocol: class {
-    init(view: CurrentWeatherViewProtocol, currentWeather: CurrentWeatherModel)
-    func showCurrentWeather()
+    init(view: CurrentWeatherViewProtocol, networkService: NetworkServiceProtocol)
+    func showCurrentWeather() //запрашивает погоду из сети
+    var currentWeather: Person? { get set } //погода, которая пришла
 }
 
 class CurrentWeatherPresenter: CurrentWeatherViewPresenterProtocol {
-    let view: CurrentWeatherViewProtocol
-    let currentWeather: CurrentWeatherModel
+    weak var view: CurrentWeatherViewProtocol?
+    let networkService: NetworkServiceProtocol!
+    var currentWeather: Person?
     
-    required init(view: CurrentWeatherViewProtocol, currentWeather: CurrentWeatherModel) {
+    
+    required init(view: CurrentWeatherViewProtocol, networkService: NetworkServiceProtocol) {
         self.view = view
-        self.currentWeather = currentWeather
+        self.networkService = networkService
+        //когда из вне будет пуш, вызовется show
+        showCurrentWeather()
     }
     
     func showCurrentWeather() {
-        let weather = currentWeather.currentTemp
-        view.setCurrentWeather(weather: weather)
+        networkService.request(router: Router.getCurrentWeather) { (result: Result<Person, Error>) in
+            switch result {
+            case .success(let currentWeather):
+                self.currentWeather = currentWeather
+                self.view?.success()
+            case .failure(let error):
+                self.view?.failure(error: error)
+            }
+        }
     }
 }
+
+

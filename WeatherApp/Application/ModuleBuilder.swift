@@ -13,9 +13,9 @@ protocol Builder {
 
 class ModuleBuilder: Builder {
     static func createCurrentWeatherModule() -> UIViewController {
-        let model = CurrentWeatherModel(currentTemp: "+3")
         let view = CurrentWeatherViewController()
-        let presenter = CurrentWeatherPresenter(view: view, currentWeather: model)
+        let networkService = NetworkService()
+        let presenter = CurrentWeatherPresenter(view: view, networkService: networkService)
         view.presenter = presenter
         return view
     }
