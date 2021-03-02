@@ -17,6 +17,7 @@ protocol CurrentWeatherViewPresenterProtocol: class {
     func showCurrentWeather()
     func startUpdatingLocation()
     var currentWeather: CurrentWeatherData? { get set }
+    var currentWeatherModel: CurrentWeatherModel? { get set }
 }
 
 class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
@@ -24,6 +25,7 @@ class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
     private let networkService: NetworkServiceProtocol!
     private let locationService: LocationService!
     var currentWeather: CurrentWeatherData?
+    var currentWeatherModel: CurrentWeatherModel?
     
     required init(view: WeatherViewProtocol, networkService: NetworkServiceProtocol, locationService: LocationService) {
         self.view = view

@@ -10,13 +10,6 @@ import Foundation
 // MARK: - Person
 struct ForecastWeatherData: Codable {
     let list: [ForecastList]
-    let city: City
-}
-
-// MARK: - City
-struct City: Codable {
-    let name: String
-    let country: String
 }
 
 // MARK: - List

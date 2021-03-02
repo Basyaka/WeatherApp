@@ -13,7 +13,7 @@ protocol NetworkServiceProtocol: class {
 }
 
 class NetworkService: NetworkServiceProtocol {
-    func request<T>(router: Router, completion: @escaping (Result<T, Error>) -> ()) where T : Decodable, T : Encodable {
+    func request<T>(router: Router, completion: @escaping (Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
         
         var components = URLComponents()
         components.scheme = router.scheme
