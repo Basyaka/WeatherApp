@@ -8,8 +8,8 @@
 import Foundation
 
 enum Router {
-    case getCurrentWeather
-    case getForecast
+    case getCurrentWeather(lat: Double, lon: Double)
+    case getForecast(lat: Double, lon: Double)
     
     var scheme: String {
         switch self {
@@ -38,12 +38,14 @@ enum Router {
         let appid = "0797492c4509ad4dc15002cb1ff33103"
         let units = "metric"
         switch self {
-        case .getCurrentWeather:
-          return [URLQueryItem(name: "q", value: "Minsk"),
+        case .getCurrentWeather(let lat, let lon):
+          return [URLQueryItem(name: "lat", value: "\(lat)"),
+                  URLQueryItem(name: "lon", value: "\(lon)"),
                   URLQueryItem(name: "units", value: units),
                   URLQueryItem(name: "appid", value: appid)]
-        case .getForecast:
-          return [URLQueryItem(name: "q", value: "Minsk"),
+        case .getForecast(let lat, let lon):
+          return [URLQueryItem(name: "lat", value: "\(lat)"),
+                  URLQueryItem(name: "lon", value: "\(lon)"),
                   URLQueryItem(name: "units", value: units),
                   URLQueryItem(name: "appid", value: appid)]
         }

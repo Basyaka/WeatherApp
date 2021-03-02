@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreLocation
 
 protocol NetworkServiceProtocol: class {
     func request<T: Codable>(router: Router, completion: @escaping (Result<T, Error>) -> Void)
@@ -23,6 +24,8 @@ class NetworkService: NetworkServiceProtocol {
         guard let url = components.url else { return }
         let urlRequest = URLRequest(url: url)
         
+        print(url)
+        
         let session = URLSession(configuration: .default)
         let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
             if let err = error {
@@ -34,10 +37,12 @@ class NetworkService: NetworkServiceProtocol {
                 return
             }
             
-            let responseObject = try! JSONDecoder().decode(T.self, from: data)
+            let responseObject = try? JSONDecoder().decode(T.self, from: data)
             
             DispatchQueue.main.async {
-                completion(.success(responseObject))
+                if let responseObject = responseObject {
+                    completion(.success(responseObject))
+                }
             }
         }
         dataTask.resume()

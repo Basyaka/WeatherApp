@@ -18,8 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         window?.windowScene = windowScene
-        let currentWeatherVC = ModuleBuilder.createCurrentWeatherModule()
-        window?.rootViewController = currentWeatherVC
+        window?.rootViewController = UINavigationController(rootViewController: WeatherTabBarController())
         window?.makeKeyAndVisible()
     }
 

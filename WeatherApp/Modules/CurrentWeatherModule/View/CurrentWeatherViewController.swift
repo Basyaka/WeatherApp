@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreLocation
 
 class CurrentWeatherViewController: UIViewController {
     
@@ -25,11 +26,12 @@ class CurrentWeatherViewController: UIViewController {
         return button
     }()
     
-    weak var presenter: CurrentWeatherViewPresenterProtocol?
+    var presenter: CurrentWeatherViewPresenterProtocol!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
+        super.tabBarController?.title = "Today"
         view.backgroundColor = .white
     }
     
@@ -52,13 +54,14 @@ class CurrentWeatherViewController: UIViewController {
     }
     
     @objc private func buttonTapped() {
-        presenter?.showCurrentWeather()
+        presenter.showCurrentWeather()
     }
 }
 
-extension CurrentWeatherViewController: CurrentWeatherViewProtocol {
+extension CurrentWeatherViewController: WeatherViewProtocol {    
     func success() {
-        label.text = presenter?.currentWeather?.name
+        guard let currentWeather = presenter.currentWeather else { return }
+        label.text = "\(currentWeather.name)"
     }
     
     func failure(error: Error) {
