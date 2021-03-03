@@ -21,9 +21,9 @@ protocol CurrentWeatherViewPresenterProtocol: class {
 }
 
 class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
-    private weak var view: WeatherViewProtocol?
-    private let networkService: NetworkServiceProtocol!
-    private let locationService: LocationService!
+    weak var view: WeatherViewProtocol?
+    let networkService: NetworkServiceProtocol!
+    let locationService: LocationService!
     var currentWeather: CurrentWeatherData?
     var currentWeatherModel: CurrentWeatherModel?
     

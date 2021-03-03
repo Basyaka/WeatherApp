@@ -76,22 +76,34 @@ struct CurrentWeatherModel {
     
     var temperatureString: String {
         let temp = String(format: "%.0f", temperature)
-        return "\(temp) °С"
+        return "\(temp)°С"
     }
     
     var pressureString: String {
+        let pressure = String(format: "%.0f", self.pressure)
         return "\(pressure) hPa"
     }
     
     var windSpeedString: String {
-        return "\(speed*3.529) km/h"
+        let kmhspeed = speed*3.529
+        let speed = String(format: "%.0f", kmhspeed)
+        return "\(speed) km/h"
     }
     
     var humidityString: String {
-        return "\(humidity) %"
+        let humidity = String(format: "%.0f", self.humidity)
+        return "\(humidity)%"
     }
     
     var locationName: String {
         return "\(cityName), \(countryName)"
     }
+    
+    var amountOfRainString: String {
+        let rain = String(format: "%.1f", amountOfRain)
+        return "\(rain) mm"
+    }
+    
+    lazy var collectionInfoArray = [humidityString, amountOfRainString, pressureString, windSpeedString, windDirection]
+    let collectionImageStringArray = ["cloud.rain", "cloud.heavyrain", "thermometer", "wind", "chevron.right.circle"]
 }
