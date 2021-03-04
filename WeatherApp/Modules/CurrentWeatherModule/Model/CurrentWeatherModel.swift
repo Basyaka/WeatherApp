@@ -46,8 +46,6 @@ struct CurrentWeatherModel {
             return "cloud.fog"
         case 800:
             return "sun.max"
-        case 801...804:
-            return "cloud.bolt"
         default:
             return "cloud"
         }
@@ -74,9 +72,9 @@ struct CurrentWeatherModel {
         }
     }
     
-    var temperatureString: String {
+    var temperatureAndWeatherNameString: String {
         let temp = String(format: "%.0f", temperature)
-        return "\(temp)°С"
+        return "\(temp)°С | \(weatherName)"
     }
     
     var pressureString: String {
@@ -107,5 +105,5 @@ struct CurrentWeatherModel {
     lazy var collectionInfoArray = [humidityString, amountOfRainString, pressureString, windSpeedString, windDirection]
     let collectionImageStringArray = ["cloud.rain", "cloud.heavyrain", "thermometer", "wind", "chevron.right.circle"]
     
-    lazy var weatherMessage = "Weather in \(locationName) today: \(weatherName), tepmerature \(temperatureString), pressure \(pressureString), humifity \(humidityString), wind speed \(windSpeedString) and \(windDirection) wind direction."
+    lazy var weatherMessage = "Weather in \(locationName) today: \(weatherName), tepmerature \(temperatureAndWeatherNameString), pressure \(pressureString), humifity \(humidityString), wind speed \(windSpeedString) and \(windDirection) wind direction."
 }

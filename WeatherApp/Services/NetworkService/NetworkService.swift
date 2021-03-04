@@ -23,14 +23,10 @@ class NetworkService: NetworkServiceProtocol {
         
         guard let url = components.url else { return }
         let urlRequest = URLRequest(url: url)
-        
-        print(url)
-        
         let session = URLSession(configuration: .default)
         let dataTask = session.dataTask(with: urlRequest) { (data, response, error) in
             if let err = error {
                 completion(.failure(err))
-                print(err.localizedDescription)
                 return
             }
             guard response != nil, let data = data else {

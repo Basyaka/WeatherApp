@@ -9,6 +9,7 @@ import Foundation
 
 protocol ForecastWeatherViewPresenterProtocol: class {
     func showForecastWeather()
+    func startUpdateLocation()
     var forecastWeather: ForecastWeatherData? { get set }
     var forecastWeatherModel: ForecastWeatherModel? { get set }
 }
@@ -19,7 +20,6 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
     
     func showForecastWeather() {
         guard let currentLocation = locationService.getCurrentLocation() else { return }
-        print("Transfer loc to net request \(currentLocation)")
         networkService.request(router: Router.getForecast(lat: currentLocation.lat, lon: currentLocation.lon)) { (result: Result<ForecastWeatherData, Error>) in
             switch result {
             case .success(let forecastWeather):
@@ -30,4 +30,9 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
             }
         }
     }
+    
+    func startUpdateLocation() {
+        startUpdatingLocation()
+    }
+
 }

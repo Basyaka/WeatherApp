@@ -33,10 +33,6 @@ class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProto
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("error:: \(error.localizedDescription)")
-    }
-    
     func startUpdatingLocation() {
         locationManager.startUpdatingLocation()
     }

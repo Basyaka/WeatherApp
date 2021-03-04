@@ -15,7 +15,7 @@ protocol WeatherViewProtocol: class {
 protocol CurrentWeatherViewPresenterProtocol: class {
     init(view: WeatherViewProtocol, networkService: NetworkServiceProtocol, locationService: LocationService)
     func startUpdatingLocation()
-    func updateInfo()
+    func showCurrentWeather()
     var currentWeather: CurrentWeatherData? { get set }
     var currentWeatherModel: CurrentWeatherModel? { get set }
 }
@@ -26,21 +26,16 @@ class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
     let locationService: LocationService!
     var currentWeather: CurrentWeatherData?
     var currentWeatherModel: CurrentWeatherModel?
-    var currentLocation: Location? {
-        didSet {
-            showCurrentWeather()
-        }
-    }
     
     required init(view: WeatherViewProtocol, networkService: NetworkServiceProtocol, locationService: LocationService) {
         self.view = view
         self.networkService = networkService
         self.locationService = locationService
-        startUpdatingLocation()
+        locationService.startUpdatingLocation()
     }
     
-    private func showCurrentWeather() {
-        guard let currentLocation = currentLocation else { return }
+    func showCurrentWeather() {
+        guard let currentLocation = locationService.getCurrentLocation() else { return }
         networkService.request(router: Router.getCurrentWeather(lat: currentLocation.lat, lon: currentLocation.lon)) { (result: Result<CurrentWeatherData, Error>) in
             switch result {
             case .success(let currentWeather):
@@ -54,12 +49,6 @@ class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
     
     func startUpdatingLocation() {
         locationService.startUpdatingLocation()
-        //Nortification
-//        updateInfo()
-    }
-    
-    func updateInfo() {
-        currentLocation = locationService.getCurrentLocation()
     }
 }
 

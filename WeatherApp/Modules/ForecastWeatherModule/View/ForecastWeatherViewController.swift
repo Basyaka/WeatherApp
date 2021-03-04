@@ -16,14 +16,28 @@ class ForecastWeatherViewController: UIViewController {
         tb.dataSource = self
         tb.register(ForecastTableViewCell.self, forCellReuseIdentifier: ForecastTableViewCell.identifier)
         tb.rowHeight = 100
+        tb.refreshControl = refresher
         return tb
+    }()
+    
+    private lazy var refresher: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(updateAction), for: .valueChanged)
+        return refreshControl
     }()
     
     var presenter: ForecastWeatherViewPresenterProtocol!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = "Forecast"
         setLayout()
+        presenter.startUpdateLocation()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        presenter.showForecastWeather()
     }
     
     private func setLayout() {
@@ -36,28 +50,42 @@ class ForecastWeatherViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
+    
+    @objc func updateAction() {
+        presenter.startUpdateLocation()
+        presenter.showForecastWeather()
+    }
 }
 
 extension ForecastWeatherViewController: WeatherViewProtocol {
     func success() {
+        refresher.endRefreshing()
         guard let forecastWeatherData = presenter.forecastWeather else { return }
         presenter.forecastWeatherModel = ForecastWeatherModel(forecastWeatherData: forecastWeatherData)
-        guard let currentWeatherModel = presenter.forecastWeatherModel else { return }
         tableView.reloadData()
     }
     
     func failure(error: Error) {
-        print(error.localizedDescription)
+        DispatchQueue.main.async {
+            self.refresher.endRefreshing()
+            self.showErrorAlert(title: "Failed To Update Data" , message: "Please, check your internet connection or try requesting later.")
+        }
     }
 }
 
 extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return presenter.forecastWeatherModel?.forecastList.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.identifier, for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.identifier, for: indexPath) as! ForecastTableViewCell
+        if let currentWeatherModel = presenter.forecastWeatherModel {
+            cell.temperatureLabel.text = currentWeatherModel.temperatureArray[indexPath.row]
+            cell.weatherImageView.image = UIImage(systemName: currentWeatherModel.conditionNameArray[indexPath.row])
+            cell.weatherName.text = currentWeatherModel.weatherNameArray[indexPath.row]
+            cell.timeLabel.text = currentWeatherModel.timeArray[indexPath.row]
+        }
         return cell
     }
 }

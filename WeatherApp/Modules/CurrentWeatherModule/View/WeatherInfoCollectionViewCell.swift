@@ -22,7 +22,6 @@ class WeatherInfoCollectionViewCell: UICollectionViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.textColor = .darkGray
         return label
     }()
     
@@ -42,13 +41,13 @@ class WeatherInfoCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(stack)
         NSLayoutConstraint.activate([
-            weatherInfoImageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.6),
-            weatherInfoLabel.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 0.4),
+            weatherInfoImageView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.6),
+            weatherInfoLabel.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.4),
             
-            stack.topAnchor.constraint(equalTo: contentView.topAnchor),
-            stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            stack.topAnchor.constraint(equalTo: topAnchor),
+            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
+            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 }
