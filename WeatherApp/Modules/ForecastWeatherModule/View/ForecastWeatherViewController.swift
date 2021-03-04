@@ -23,7 +23,6 @@ class ForecastWeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tabBarController?.title = "Forecast"
         setLayout()
     }
     

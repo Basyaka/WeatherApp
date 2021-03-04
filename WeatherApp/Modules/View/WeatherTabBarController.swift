@@ -16,13 +16,18 @@ class WeatherTabBarController: UITabBarController {
     
     private func setupTabBar() {
         let currentWeatherVC = ModuleBuilder.createCurrentWeatherModule()
-        currentWeatherVC.tabBarItem = UITabBarItem(title: "Today", image: UIImage(systemName: "sun.max"), tag: 0)
-        
         let forecastWeatherVC = ModuleBuilder.createForecastWeatherModule()
-        forecastWeatherVC.tabBarItem = UITabBarItem(title: "Forecast", image: UIImage(systemName: "cloud.moon"), tag: 1)
         
-        let tabBarList = [currentWeatherVC, forecastWeatherVC]
-        
-        viewControllers = tabBarList
+        viewControllers = [
+            generateNavigationController(viewController: currentWeatherVC, title: "Today", image: UIImage(systemName: "sun.max")!),
+            generateNavigationController(viewController: forecastWeatherVC, title: "Forecast", image: UIImage(systemName: "cloud.moon")!)
+        ]
+    }
+    
+    private func generateNavigationController(viewController: UIViewController, title: String, image: UIImage) -> UIViewController {
+        let navVC = UINavigationController(rootViewController: viewController)
+        navVC.tabBarItem.title = title
+        navVC.tabBarItem.image = image
+        return navVC
     }
 }

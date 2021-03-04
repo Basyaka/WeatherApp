@@ -52,3 +52,5 @@ class WeatherInfoCollectionViewCell: UICollectionViewCell {
         ])
     }
 }
+
+

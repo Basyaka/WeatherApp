@@ -43,24 +43,21 @@ class CurrentWeatherViewController: UIViewController {
     }()
     
     private lazy var weatherInfoCollectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 10
-        layout.minimumInteritemSpacing = 10
-        layout.itemSize = CGSize(width: (view.frame.size.width/4.5), height: (view.frame.size.width/4.5))
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: CurrentWeatherViewController.createLayout())
         collectionView.register(WeatherInfoCollectionViewCell.self, forCellWithReuseIdentifier: WeatherInfoCollectionViewCell.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .white
+        collectionView.isScrollEnabled = false
+        collectionView.backgroundColor = .clear
         return collectionView
     }()
     
     private var shareButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = .blue
+        button.backgroundColor = .systemBlue
+        button.layer.cornerRadius = 20
         button.setTitle("Share", for: .normal)
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         return button
@@ -71,8 +68,12 @@ class CurrentWeatherViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setLayout()
-        tabBarController?.title = "Today" ///////////////
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        presenter.updateInfo()
     }
     
     private func setLayout() {
@@ -97,8 +98,8 @@ class CurrentWeatherViewController: UIViewController {
         
         view.addSubview(mainInfoStack)
         NSLayoutConstraint.activate([
-            stackForImageIconAndLocation.heightAnchor.constraint(equalTo: mainInfoStack.heightAnchor, multiplier: 0.8),
-            stackForTempAndWeatherInfo.heightAnchor.constraint(equalTo: mainInfoStack.heightAnchor, multiplier: 0.2),
+            stackForImageIconAndLocation.heightAnchor.constraint(equalTo: mainInfoStack.heightAnchor, multiplier: 0.73),
+            stackForTempAndWeatherInfo.heightAnchor.constraint(equalTo: mainInfoStack.heightAnchor, multiplier: 0.27),
             
             mainInfoStack.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3),
             stackForImageIconAndLocation.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.75),
@@ -119,14 +120,66 @@ class CurrentWeatherViewController: UIViewController {
         view.addSubview(shareButton)
         NSLayoutConstraint.activate([
             shareButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            shareButton.heightAnchor.constraint(equalToConstant: 50),
+            shareButton.heightAnchor.constraint(equalToConstant: 50
+            ),
             shareButton.widthAnchor.constraint(equalToConstant: 100),
             shareButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
         
     }
+    
+    static func createLayout() -> UICollectionViewLayout {
+        // Item
+        let item = NSCollectionLayoutItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(1)
+            )
+        )
+        item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
+        
+        // Group
+        let firstLvlgroup = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(2/5)),
+            subitem: item,
+            count: 3
+        )
+        
+        let secondLvlGroup = NSCollectionLayoutGroup.horizontal(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(2/5)),
+            subitem: item,
+            count: 2
+        )
+        secondLvlGroup.contentInsets = .init(top: 0, leading: 50, bottom: 0, trailing: 50)
+        
+        let group = NSCollectionLayoutGroup.vertical(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(1)
+            ),
+            subitems: [firstLvlgroup, secondLvlGroup]
+        )
+        
+        // Sections
+        let section = NSCollectionLayoutSection(group: group)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        
+        // Return
+        return layout
+        
+    }
+    
     @objc private func buttonTapped() {
-        presenter.showCurrentWeather()
+        presenter.updateInfo()
+        //
+        guard var currentWeatherModel = presenter.currentWeatherModel else { return }
+        let shareController = UIActivityViewController(activityItems: [currentWeatherModel.weatherMessage], applicationActivities: nil)
+        present(shareController, animated: true, completion: nil)
     }
 }
 
@@ -153,7 +206,7 @@ extension CurrentWeatherViewController: UICollectionViewDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return presenter.currentWeatherModel?.collectionInfoArray.count ?? 0
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherInfoCollectionViewCell.identifier, for: indexPath) as! WeatherInfoCollectionViewCell
         if var currentWeatherModel = presenter.currentWeatherModel {
