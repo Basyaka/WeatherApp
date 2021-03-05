@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CDCurrentWeather" representedClassName="CDCurrentWeather" syncable="YES">
+        <attribute name="amountOfRainString" optional="YES" attributeType="String"/>
+        <attribute name="conditionName" optional="YES" attributeType="String"/>
+        <attribute name="humidityString" optional="YES" attributeType="String"/>
+        <attribute name="locationName" optional="YES" attributeType="String"/>
+        <attribute name="pressureString" optional="YES" attributeType="String"/>
+        <attribute name="temperatureAndWeatherNameString" optional="YES" attributeType="String"/>
+        <attribute name="windDirection" optional="YES" attributeType="String"/>
+        <attribute name="windSpeedString" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="CDForecastWeather" representedClassName="CDForecastWeather" syncable="YES">
+        <attribute name="conditionNameArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer"/>
+        <attribute name="temperatureArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer"/>
+        <attribute name="timeArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer"/>
+        <attribute name="weatherNameArray" optional="YES" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromDataTransformer"/>
+    </entity>
+    <elements>
+        <element name="CDCurrentWeather" positionX="-45" positionY="0" width="128" height="149"/>
+        <element name="CDForecastWeather" positionX="-45" positionY="63" width="128" height="89"/>
+    </elements>
+</model>

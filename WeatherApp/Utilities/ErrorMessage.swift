@@ -2,12 +2,20 @@
 //  ErrorMessage.swift
 //  WeatherApp
 //
-//  Created by Vlad Novik on 27.02.21.
+//  Created by Vlad Novik on 5.03.21.
 //
 
 import Foundation
 
-enum ErrorMessage: String, Error {
-    case invalidData = "Sorry. Somthing went wrong, try again!"
-    case invalidResponce = "Server error"
+struct ErrorMessage {
+    struct NetError {
+        static let titleNetError = "Failed To Update Data"
+        static let bodyNetError = "Please, check your internet connection and try requesting later. \n Downloaded data from the archive."
+    }
+    
+    struct ShareError {
+        static let titleShareError = "No New Information Found"
+        static let bodyShareError = "Information does not exist. Refresh the weather data."
+    }
+    
 }

@@ -6,7 +6,7 @@
 //
 
 // MARK: - CurrentWeatherData
-struct CurrentWeatherData: Codable {
+struct CurrentWeatherData: Decodable {
     let weather: [Weather]
     let main: Main
     let wind: Wind
@@ -16,29 +16,29 @@ struct CurrentWeatherData: Codable {
 }
 
 // MARK: - Weather
-struct Weather: Codable {
+struct Weather: Decodable {
     let id: Int
     let main: String
 }
 
 // MARK: - Main
-struct Main: Codable {
+struct Main: Decodable {
     let temp: Double
     let pressure, humidity: Double
 }
 
 // MARK: - Wind
-struct Wind: Codable {
+struct Wind: Decodable {
     let speed, deg: Double
 }
 
 // MARK: - Sys
-struct Sys: Codable {
+struct Sys: Decodable {
     let country: String?
 }
 
 //MARK: - Rain
-struct Rain: Codable {
+struct Rain: Decodable {
     let the1H: Double?
     
     enum CodingKeys: String, CodingKey {

@@ -30,14 +30,19 @@ class ForecastWeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Forecast"
-        setLayout()
-        presenter.startUpdateLocation()
+        configureController()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        startSpinner()
         presenter.showForecastWeather()
+    }
+    
+    private func configureController() {
+        navigationItem.title = "Forecast"
+        
+        setLayout()
     }
     
     private func setLayout() {
@@ -51,6 +56,7 @@ class ForecastWeatherViewController: UIViewController {
         ])
     }
     
+    //MARK: - Actions
     @objc func updateAction() {
         presenter.startUpdateLocation()
         presenter.showForecastWeather()
@@ -60,31 +66,43 @@ class ForecastWeatherViewController: UIViewController {
 extension ForecastWeatherViewController: WeatherViewProtocol {
     func success() {
         refresher.endRefreshing()
-        guard let forecastWeatherData = presenter.forecastWeather else { return }
-        presenter.forecastWeatherModel = ForecastWeatherModel(forecastWeatherData: forecastWeatherData)
+        self.stopSpinner()
         tableView.reloadData()
     }
     
     func failure(error: Error) {
         DispatchQueue.main.async {
             self.refresher.endRefreshing()
-            self.showErrorAlert(title: "Failed To Update Data" , message: "Please, check your internet connection or try requesting later.")
+            self.stopSpinner()
+            self.showErrorAlert(title: ErrorMessage.NetError.titleNetError, message: ErrorMessage.NetError.bodyNetError)
+            self.tableView.reloadData()
         }
     }
 }
 
 extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter.forecastWeatherModel?.forecastList.count ?? 0
+        if let forecastWeatherModel = presenter.forecastWeatherModel?.forecastList {
+            return forecastWeatherModel.count
+        } else if let forecastWeatherStorageModel = presenter.forecastWeatherStorageModel?.conditionNameArray {
+            return forecastWeatherStorageModel.count
+        } else {
+            return 0
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.identifier, for: indexPath) as! ForecastTableViewCell
-        if let currentWeatherModel = presenter.forecastWeatherModel {
-            cell.temperatureLabel.text = currentWeatherModel.temperatureArray[indexPath.row]
-            cell.weatherImageView.image = UIImage(systemName: currentWeatherModel.conditionNameArray[indexPath.row])
-            cell.weatherName.text = currentWeatherModel.weatherNameArray[indexPath.row]
-            cell.timeLabel.text = currentWeatherModel.timeArray[indexPath.row]
+        if let forecastWeatherModel = presenter.forecastWeatherModel {
+            cell.temperatureLabel.text = forecastWeatherModel.temperatureArray[indexPath.row]
+            cell.weatherImageView.image = UIImage(systemName: forecastWeatherModel.conditionNameArray[indexPath.row])
+            cell.weatherName.text = forecastWeatherModel.weatherNameArray[indexPath.row]
+            cell.timeLabel.text = forecastWeatherModel.timeArray[indexPath.row]
+        } else if let forecastWeatherStorageModel = presenter.forecastWeatherStorageModel {
+            cell.temperatureLabel.text = forecastWeatherStorageModel.temperatureArray?[indexPath.row]
+            cell.weatherImageView.image = UIImage(systemName: (forecastWeatherStorageModel.conditionNameArray?[indexPath.row])!)
+            cell.weatherName.text = forecastWeatherStorageModel.weatherNameArray?[indexPath.row]
+            cell.timeLabel.text = forecastWeatherStorageModel.timeArray?[indexPath.row]
         }
         return cell
     }

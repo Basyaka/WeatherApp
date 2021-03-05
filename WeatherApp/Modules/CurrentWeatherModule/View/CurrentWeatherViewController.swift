@@ -21,6 +21,7 @@ class CurrentWeatherViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
         label.font = UIFont(name: label.font.fontName, size: (view.frame.size.height)/25)
         return label
     }()
@@ -30,51 +31,13 @@ class CurrentWeatherViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.textColor = .systemBlue
+        label.adjustsFontSizeToFitWidth = true
         label.font = UIFont(name: label.font.fontName, size: (view.frame.size.height)/18)
         return label
     }()
     
     private lazy var weatherInfoCollectionView: UICollectionView = {
-        // Item
-        let item = NSCollectionLayoutItem(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalHeight(1)
-            )
-        )
-        item.contentInsets = .init(top: 5, leading: 5, bottom: 5, trailing: 5)
-        
-        // Group
-        let firstLvlgroup = NSCollectionLayoutGroup.horizontal(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalHeight(2/5)),
-            subitem: item,
-            count: 3
-        )
-        
-        let secondLvlGroup = NSCollectionLayoutGroup.horizontal(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalHeight(2/5)),
-            subitem: item,
-            count: 2
-        )
-        secondLvlGroup.contentInsets = .init(top: 0, leading: 50, bottom: 0, trailing: 50)
-        
-        let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .fractionalHeight(1)
-            ),
-            subitems: [firstLvlgroup, secondLvlGroup]
-        )
-        
-        // Section
-        let section = NSCollectionLayoutSection(group: group)
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: WeatherInfoCollectionViewLayout.createCompositionalLayout())
         collectionView.register(WeatherInfoCollectionViewCell.self, forCellWithReuseIdentifier: WeatherInfoCollectionViewCell.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -90,7 +53,7 @@ class CurrentWeatherViewController: UIViewController {
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 20
         button.setTitle("Share", for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
         return button
     }()
     
@@ -98,9 +61,7 @@ class CurrentWeatherViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setLayout()
         configureController()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -113,6 +74,8 @@ class CurrentWeatherViewController: UIViewController {
         navigationItem.title = "Today"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(updateTapped))
         view.backgroundColor = .systemBackground
+        
+        setLayout()
     }
     
     private func setLayout() {
@@ -162,18 +125,19 @@ class CurrentWeatherViewController: UIViewController {
         
     }
     
+    //MARK: - Actions
     @objc func updateTapped() {
         startSpinner()
         presenter.startUpdatingLocation()
         presenter.showCurrentWeather()
     }
     
-    @objc private func buttonTapped() {
+    @objc private func shareTapped() {
         if var currentWeatherModel = presenter.currentWeatherModel {
             let shareController = UIActivityViewController(activityItems: [currentWeatherModel.weatherMessage], applicationActivities: nil)
             present(shareController, animated: true, completion: nil)
         } else {
-            showErrorAlert(title: "Not Found", message: "Information does not exist. Refresh the weather data.")
+            showErrorAlert(title: ErrorMessage.ShareError.titleShareError, message: ErrorMessage.ShareError.bodyShareError)
         }
     }
 }
@@ -182,19 +146,22 @@ class CurrentWeatherViewController: UIViewController {
 extension CurrentWeatherViewController: WeatherViewProtocol {    
     func success() {
         stopSpinner()
-        guard let currentWeatherData = presenter.currentWeather else { return }
-        presenter.currentWeatherModel = CurrentWeatherModel(currentWeatherData: currentWeatherData)
         guard let currentWeatherModel = presenter.currentWeatherModel else { return }
-        weatherIcon.image = UIImage(systemName: currentWeatherModel.conditionName)
-        locationLabel.text = currentWeatherModel.locationName
-        temperatureAndWeatherNameLabel.text = currentWeatherModel.temperatureAndWeatherNameString
-        weatherInfoCollectionView.reloadData()
+        self.weatherIcon.image = UIImage(systemName: currentWeatherModel.conditionName)
+        self.locationLabel.text = currentWeatherModel.locationName
+        self.temperatureAndWeatherNameLabel.text = currentWeatherModel.temperatureAndWeatherNameString
+        self.weatherInfoCollectionView.reloadData()
     }
     
     func failure(error: Error) {
+        guard let currentWeatherModel = presenter.currentWeatherStorageModel else { return }
         DispatchQueue.main.async {
+            self.showErrorAlert(title: ErrorMessage.NetError.titleNetError , message: ErrorMessage.NetError.bodyNetError)
+            self.weatherIcon.image = UIImage(systemName: currentWeatherModel.conditionName!)
+            self.locationLabel.text = currentWeatherModel.locationName
+            self.temperatureAndWeatherNameLabel.text = currentWeatherModel.temperatureAndWeatherNameString
+            self.weatherInfoCollectionView.reloadData()
             self.stopSpinner()
-            self.showErrorAlert(title: "Failed To Update Data" , message: "Please, check your internet connection or try requesting later.")
         }
     }
 }
@@ -202,14 +169,22 @@ extension CurrentWeatherViewController: WeatherViewProtocol {
 //MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension CurrentWeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return presenter.currentWeatherModel?.collectionInfoArray.count ?? 0
+        if let currentWeatherModel = presenter.currentWeatherModel?.collectionInfoArray {
+            return currentWeatherModel.count
+        } else if let currentWeatherModel = presenter.currentWeatherStorageModel?.collectionInfoArray {
+            return currentWeatherModel.count
+        } else {
+            return 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: WeatherInfoCollectionViewCell.identifier, for: indexPath) as! WeatherInfoCollectionViewCell
+        cell.weatherInfoImageView.image = UIImage(systemName: K.collectionImageStringArray[indexPath.item])
         if var currentWeatherModel = presenter.currentWeatherModel {
             cell.weatherInfoLabel.text = currentWeatherModel.collectionInfoArray[indexPath.item]
-            cell.weatherInfoImageView.image = UIImage(systemName: currentWeatherModel.collectionImageStringArray[indexPath.item])
+        } else if var currentWeatherModel = presenter.currentWeatherStorageModel {
+            cell.weatherInfoLabel.text = currentWeatherModel.collectionInfoArray[indexPath.item]
         }
         return cell
     }

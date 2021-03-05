@@ -21,6 +21,7 @@ class WeatherInfoCollectionViewCell: UICollectionViewCell {
     var weatherInfoLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontSizeToFitWidth = true
         label.textAlignment = .center
         return label
     }()

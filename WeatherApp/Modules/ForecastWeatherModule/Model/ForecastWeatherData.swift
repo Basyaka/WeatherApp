@@ -8,12 +8,12 @@
 import Foundation
 
 // MARK: - Person
-struct ForecastWeatherData: Codable {
+struct ForecastWeatherData: Decodable {
     let list: [ForecastList]
 }
 
 // MARK: - List
-struct ForecastList: Codable {
+struct ForecastList: Decodable {
     let main: MainClass
     let weather: [ForecastWeather]
     let dtTxt: String
@@ -25,12 +25,12 @@ struct ForecastList: Codable {
 }
 
 // MARK: - MainClass
-struct MainClass: Codable {
+struct MainClass: Decodable {
     let temp: Double
 }
 
 // MARK: - Weather
-struct ForecastWeather: Codable {
+struct ForecastWeather: Decodable {
     let id: Int
     let main: String
 }

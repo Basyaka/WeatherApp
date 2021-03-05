@@ -12,11 +12,13 @@ protocol ForecastWeatherViewPresenterProtocol: class {
     func startUpdateLocation()
     var forecastWeather: ForecastWeatherData? { get set }
     var forecastWeatherModel: ForecastWeatherModel? { get set }
+    var forecastWeatherStorageModel: ForecastWeatherStorageModel? { get set }
 }
 
 class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterProtocol {
     var forecastWeather: ForecastWeatherData?
     var forecastWeatherModel: ForecastWeatherModel?
+    var forecastWeatherStorageModel: ForecastWeatherStorageModel?
     
     func showForecastWeather() {
         guard let currentLocation = locationService.getCurrentLocation() else { return }
@@ -24,8 +26,13 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
             switch result {
             case .success(let forecastWeather):
                 self.forecastWeather = forecastWeather
+                self.forecastWeatherModel = ForecastWeatherModel(forecastWeatherData: forecastWeather)
+                self.storageService.deleteForecastWeatherStorageObject()
+                guard let forecastWeatherModel = self.forecastWeatherModel else { return }
+                self.storageService.createForecastWeatherStorageObject(forecastWeather: forecastWeatherModel)
                 self.view?.success()
             case .failure(let error):
+                self.forecastWeatherStorageModel = self.storageService.getAllForecastWeatherStorageModel()?.first
                 self.view?.failure(error: error)
             }
         }

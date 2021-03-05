@@ -103,7 +103,6 @@ struct CurrentWeatherModel {
     }
     
     lazy var collectionInfoArray = [humidityString, amountOfRainString, pressureString, windSpeedString, windDirection]
-    let collectionImageStringArray = ["cloud.rain", "cloud.heavyrain", "thermometer", "wind", "chevron.right.circle"]
     
-    lazy var weatherMessage = "Weather in \(locationName) today: \(weatherName), tepmerature \(temperatureAndWeatherNameString), pressure \(pressureString), humifity \(humidityString), wind speed \(windSpeedString) and \(windDirection) wind direction."
+    lazy var weatherMessage = "Weather in \(locationName) today: \(temperatureAndWeatherNameString), pressure \(pressureString), humifity \(humidityString), wind speed \(windSpeedString) and \(windDirection) wind direction."
 }

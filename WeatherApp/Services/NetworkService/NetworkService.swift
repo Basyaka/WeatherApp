@@ -6,14 +6,13 @@
 //
 
 import Foundation
-import CoreLocation
 
 protocol NetworkServiceProtocol: class {
-    func request<T: Codable>(router: Router, completion: @escaping (Result<T, Error>) -> Void)
+    func request<T: Decodable>(router: Router, completion: @escaping (Result<T, Error>) -> Void)
 }
 
 class NetworkService: NetworkServiceProtocol {
-    func request<T>(router: Router, completion: @escaping (Result<T, Error>) -> Void) where T : Decodable, T : Encodable {
+    func request<T>(router: Router, completion: @escaping (Result<T, Error>) -> Void) where T : Decodable {
         
         var components = URLComponents()
         components.scheme = router.scheme
@@ -29,14 +28,13 @@ class NetworkService: NetworkServiceProtocol {
                 completion(.failure(err))
                 return
             }
-            guard response != nil, let data = data else {
-                return
-            }
+            
+            guard response != nil, let data = data else { return }
             
             let responseObject = try? JSONDecoder().decode(T.self, from: data)
             
-            DispatchQueue.main.async {
-                if let responseObject = responseObject {
+            if let responseObject = responseObject {
+                DispatchQueue.main.async {
                     completion(.success(responseObject))
                 }
             }

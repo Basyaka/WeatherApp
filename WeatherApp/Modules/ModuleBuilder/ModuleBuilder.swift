@@ -17,7 +17,8 @@ class ModuleBuilder: Builder {
         let view = CurrentWeatherViewController()
         let networkService = NetworkService()
         let locationService = LocationService()
-        let presenter = WeatherPresenter(view: view, networkService: networkService, locationService: locationService)
+        let storageService = StorageService()
+        let presenter = WeatherPresenter(view: view, networkService: networkService, locationService: locationService, storageService: storageService)
         view.presenter = presenter
         return view
     }
@@ -26,7 +27,8 @@ class ModuleBuilder: Builder {
         let view = ForecastWeatherViewController()
         let networkService = NetworkService()
         let locationService = LocationService()
-        let presenter = ForecastWheatherPresenter(view: view, networkService: networkService, locationService: locationService)
+        let storageService = StorageService()
+        let presenter = ForecastWheatherPresenter(view: view, networkService: networkService, locationService: locationService, storageService: storageService)
         view.presenter = presenter
         return view
     }

@@ -39,7 +39,10 @@ class ForecastTableViewCell: UITableViewCell {
     }
     
     func startSettings() {
+        selectionStyle = .none
         temperatureLabel.font = UIFont(name: temperatureLabel.font.fontName, size: (contentView.frame.size.width)/6)
+        timeLabel.adjustsFontSizeToFitWidth = true
+        weatherName.adjustsFontSizeToFitWidth = true
     }
     
     func configureLayout() {

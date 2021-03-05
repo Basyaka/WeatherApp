@@ -29,7 +29,6 @@ class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProto
         if let location = locations.last {
             locationManager.stopUpdatingLocation()
             currentLocation = Location(lat: location.coordinate.latitude, lon: location.coordinate.longitude)
-            print("Loc in didUpdateLoc \(currentLocation)")
         }
     }
     
