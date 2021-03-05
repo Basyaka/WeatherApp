@@ -1,5 +1,5 @@
 //
-//  CurrentWeatherDataRepository.swift
+//  CurrentWeatherStorageRepository.swift
 //  WeatherApp
 //
 //  Created by Vlad Novik on 5.03.21.
