@@ -40,17 +40,18 @@ class WeatherPresenter: CurrentWeatherViewPresenterProtocol {
     
     func showCurrentWeather() {
         guard let currentLocation = locationService.getCurrentLocation() else { return }
-        networkService.request(router: Router.getCurrentWeather(lat: currentLocation.lat, lon: currentLocation.lon)) { [self] (result: Result<CurrentWeatherData, Error>) in
+        networkService.request(router: Router.getCurrentWeather(lat: currentLocation.lat, lon: currentLocation.lon)) { [weak self] (result: Result<CurrentWeatherData, Error>) in
+            guard let self = self else { return }
             switch result {
             case .success(let currentWeather):
                 self.currentWeather = currentWeather
                 self.currentWeatherModel = CurrentWeatherModel(currentWeatherData: currentWeather)
-                storageService.deleteCurrentWeatherStorageObject()
-                guard let currentWeatherModel = currentWeatherModel else { return }
-                storageService.createCurrentWeatherStorageObject(currentWeather: currentWeatherModel)
+                self.storageService.deleteCurrentWeatherStorageObject()
+                guard let currentWeatherModel = self.currentWeatherModel else { return }
+                self.storageService.createCurrentWeatherStorageObject(currentWeather: currentWeatherModel)
                 self.view?.success()
             case .failure(let error):
-                self.currentWeatherStorageModel = storageService.getAllCurrentWeatherStorageModel()?.first
+                self.currentWeatherStorageModel = self.storageService.getAllCurrentWeatherStorageModel()?.first
                 self.view?.failure(error: error)
             }
         }

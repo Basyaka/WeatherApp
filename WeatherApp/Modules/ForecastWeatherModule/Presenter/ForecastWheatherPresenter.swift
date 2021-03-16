@@ -22,7 +22,8 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
     
     func showForecastWeather() {
         guard let currentLocation = locationService.getCurrentLocation() else { return }
-        networkService.request(router: Router.getForecast(lat: currentLocation.lat, lon: currentLocation.lon)) { (result: Result<ForecastWeatherData, Error>) in
+        networkService.request(router: Router.getForecast(lat: currentLocation.lat, lon: currentLocation.lon)) { [weak self] (result: Result<ForecastWeatherData, Error>) in
+            guard let self = self else { return }
             switch result {
             case .success(let forecastWeather):
                 self.forecastWeather = forecastWeather
@@ -41,5 +42,4 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
     func startUpdateLocation() {
         startUpdatingLocation()
     }
-
 }
