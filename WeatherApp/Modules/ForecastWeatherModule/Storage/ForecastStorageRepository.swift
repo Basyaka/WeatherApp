@@ -47,7 +47,7 @@ class ForecastStorageRepository {
             guard result != nil else {return nil}
             return result
         } catch let error {
-            debugPrint(error)
+            print(error)
         }
         return nil
     }

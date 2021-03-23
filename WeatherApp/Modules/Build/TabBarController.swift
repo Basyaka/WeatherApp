@@ -1,5 +1,5 @@
 //
-//  WeatherTabBarController.swift
+//  TabBarController.swift
 //  WeatherApp
 //
 //  Created by Vlad Novik on 2.03.21.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class WeatherTabBarController: UITabBarController {
+class TabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

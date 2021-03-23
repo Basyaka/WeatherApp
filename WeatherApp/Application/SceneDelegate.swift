@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         window?.windowScene = windowScene
-        window?.rootViewController = WeatherTabBarController()
+        window?.rootViewController = TabBarController()
         window?.makeKeyAndVisible()
     }
 

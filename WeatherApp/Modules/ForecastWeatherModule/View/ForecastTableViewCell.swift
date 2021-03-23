@@ -32,7 +32,7 @@ class ForecastTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         startSettings()
-        configureLayout()
+        setLayout()
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -45,7 +45,7 @@ class ForecastTableViewCell: UITableViewCell {
         weatherName.adjustsFontSizeToFitWidth = true
     }
     
-    func configureLayout() {
+    func setLayout() {
         let stack = UIStackView(arrangedSubviews: [timeLabel, weatherName])
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .vertical
@@ -53,6 +53,7 @@ class ForecastTableViewCell: UITableViewCell {
         addSubview(weatherImageView)
         addSubview(temperatureLabel)
         addSubview(stack)
+        
         NSLayoutConstraint.activate([
             weatherImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             weatherImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -67,7 +68,6 @@ class ForecastTableViewCell: UITableViewCell {
             stack.leadingAnchor.constraint(equalTo: weatherImageView.trailingAnchor, constant: 10),
             stack.trailingAnchor.constraint(equalTo: temperatureLabel.leadingAnchor, constant: -10),
             stack.centerYAnchor.constraint(equalTo: centerYAnchor)
-            
         ])
     }
 }

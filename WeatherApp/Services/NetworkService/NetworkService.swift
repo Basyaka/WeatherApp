@@ -15,8 +15,8 @@ class NetworkService: NetworkServiceProtocol {
     func request<T>(router: Router, completion: @escaping (Result<T, Error>) -> Void) where T : Decodable {
         
         var components = URLComponents()
-        components.scheme = router.scheme
-        components.host = router.host
+        components.scheme = DefaultRouterOptions.scheme
+        components.host = DefaultRouterOptions.host
         components.path = router.path
         components.queryItems = router.parameters
         

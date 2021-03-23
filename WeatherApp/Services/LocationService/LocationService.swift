@@ -16,7 +16,11 @@ protocol LocationServiceProtocol: class {
 class LocationService: NSObject, CLLocationManagerDelegate, LocationServiceProtocol {
 
     private let locationManager = CLLocationManager()
-    private var currentLocation: Location?
+    private var currentLocation: Location? {
+        didSet {
+            NotificationCenter.default.post(name: .changeCurrentLocation, object: self)
+        }
+    }
     
     override init() {
         super.init()

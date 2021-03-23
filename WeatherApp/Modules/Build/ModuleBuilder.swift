@@ -13,11 +13,12 @@ protocol Builder {
 }
 
 class ModuleBuilder: Builder {
+    private static let networkService = NetworkService()
+    private static let locationService = LocationService()
+    private static let storageService = StorageService()
+    
     static func createCurrentWeatherModule() -> UIViewController {
         let view = CurrentWeatherViewController()
-        let networkService = NetworkService()
-        let locationService = LocationService()
-        let storageService = StorageService()
         let presenter = WeatherPresenter(view: view, networkService: networkService, locationService: locationService, storageService: storageService)
         view.presenter = presenter
         return view
@@ -25,9 +26,6 @@ class ModuleBuilder: Builder {
     
     static func createForecastWeatherModule() -> UIViewController {
         let view = ForecastWeatherViewController()
-        let networkService = NetworkService()
-        let locationService = LocationService()
-        let storageService = StorageService()
         let presenter = ForecastWheatherPresenter(view: view, networkService: networkService, locationService: locationService, storageService: storageService)
         view.presenter = presenter
         return view

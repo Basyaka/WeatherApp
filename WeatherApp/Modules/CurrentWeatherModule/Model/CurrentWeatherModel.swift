@@ -19,7 +19,7 @@ struct CurrentWeatherModel {
     let deg: Double
     let amountOfRain: Double
     
-    init?(currentWeatherData current: CurrentWeatherData) {
+    init(currentWeatherData current: CurrentWeatherData) {
         self.id = current.weather[0].id
         self.weatherName = current.weather[0].main
         self.cityName = current.name ?? " "

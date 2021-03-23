@@ -9,6 +9,8 @@ import UIKit
 
 class ForecastWeatherViewController: UIViewController {
     
+    var presenter: ForecastWeatherViewPresenterProtocol!
+    
     private lazy var tableView: UITableView = {
         let tb = UITableView()
         tb.translatesAutoresizingMaskIntoConstraints = false
@@ -22,11 +24,9 @@ class ForecastWeatherViewController: UIViewController {
     
     private lazy var refresher: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(updateAction), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(updateWeatherTapped), for: .valueChanged)
         return refreshControl
     }()
-    
-    var presenter: ForecastWeatherViewPresenterProtocol!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,13 +36,20 @@ class ForecastWeatherViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         startSpinner()
-        presenter.showForecastWeather()
+        presenter.startUpdatingLocation()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    //Methods to start configure VC
     private func configureController() {
         navigationItem.title = "Forecast"
         
         setLayout()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateCurrentWeather), name: .changeCurrentLocation, object: nil)
     }
     
     private func setLayout() {
@@ -55,14 +62,20 @@ class ForecastWeatherViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
+}
+
+//MARK: - Actions
+extension ForecastWeatherViewController {
+    @objc func updateWeatherTapped() {
+        presenter.startUpdatingLocation()
+    }
     
-    //MARK: - Actions
-    @objc func updateAction() {
-        presenter.startUpdateLocation()
+    @objc private func updateCurrentWeather() {
         presenter.showForecastWeather()
     }
 }
 
+//MARK: - WeatherViewProtocol
 extension ForecastWeatherViewController: WeatherViewProtocol {
     func success() {
         refresher.endRefreshing()
@@ -80,6 +93,7 @@ extension ForecastWeatherViewController: WeatherViewProtocol {
     }
 }
 
+//MARK: - UITableViewDelegate, UITableViewDataSource
 extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let forecastWeatherModel = presenter.forecastWeatherModel?.forecastList {

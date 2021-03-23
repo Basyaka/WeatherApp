@@ -10,12 +10,12 @@ import Foundation
 struct ForecastWeatherModel {
     let forecastList: [ForecastList]
     
-    init?(forecastWeatherData forecast: ForecastWeatherData) {
-        forecastList = forecast.list
-    }
-    
     private let dateFormatterGet = DateFormatter()
     private let dateFormatterResult = DateFormatter()
+    
+    init(forecastWeatherData forecast: ForecastWeatherData) {
+        forecastList = forecast.list
+    }
     
     var timeArray: [String] {
         var timeArr = [String]()

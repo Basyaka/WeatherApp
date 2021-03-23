@@ -10,6 +10,9 @@ import CoreLocation
 
 class CurrentWeatherViewController: UIViewController {
     
+    var presenter: CurrentWeatherViewPresenterProtocol!
+
+    //UI elements
     private var weatherIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -56,9 +59,7 @@ class CurrentWeatherViewController: UIViewController {
         button.addTarget(self, action: #selector(shareTapped), for: .touchUpInside)
         return button
     }()
-    
-    var presenter: CurrentWeatherViewPresenterProtocol!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configureController()
@@ -67,15 +68,23 @@ class CurrentWeatherViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         startSpinner()
-        presenter.showCurrentWeather()
+        presenter.startUpdatingLocation()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    //Method to start configure VC
     private func configureController() {
         navigationItem.title = "Today"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(updateTapped))
         view.backgroundColor = .systemBackground
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(updateTapped))
+        
         setLayout()
+        
+       NotificationCenter.default.addObserver(self, selector: #selector(updateCurrentWeather), name: .changeCurrentLocation, object: nil)
     }
     
     private func setLayout() {
@@ -122,14 +131,14 @@ class CurrentWeatherViewController: UIViewController {
             shareButton.widthAnchor.constraint(equalToConstant: 100),
             shareButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
-        
     }
-    
-    //MARK: - Actions
+}
+
+//MARK: - Actions
+extension CurrentWeatherViewController {
     @objc func updateTapped() {
         startSpinner()
         presenter.startUpdatingLocation()
-        presenter.showCurrentWeather()
     }
     
     @objc private func shareTapped() {
@@ -139,6 +148,10 @@ class CurrentWeatherViewController: UIViewController {
         } else {
             showErrorAlert(title: ErrorMessage.ShareError.titleShareError, message: ErrorMessage.ShareError.bodyShareError)
         }
+    }
+    
+    @objc private func updateCurrentWeather() {
+        presenter.showCurrentWeather()
     }
 }
 

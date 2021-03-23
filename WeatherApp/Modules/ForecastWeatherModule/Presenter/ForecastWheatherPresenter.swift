@@ -9,10 +9,10 @@ import Foundation
 
 protocol ForecastWeatherViewPresenterProtocol: class {
     func showForecastWeather()
-    func startUpdateLocation()
-    var forecastWeather: ForecastWeatherData? { get set }
-    var forecastWeatherModel: ForecastWeatherModel? { get set }
-    var forecastWeatherStorageModel: ForecastWeatherStorageModel? { get set }
+    func startUpdatingLocation()
+    var forecastWeather: ForecastWeatherData? { get }
+    var forecastWeatherModel: ForecastWeatherModel? { get }
+    var forecastWeatherStorageModel: ForecastWeatherStorageModel? { get }
 }
 
 class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterProtocol {
@@ -38,8 +38,5 @@ class ForecastWheatherPresenter: WeatherPresenter, ForecastWeatherViewPresenterP
             }
         }
     }
-    
-    func startUpdateLocation() {
-        startUpdatingLocation()
-    }
+
 }

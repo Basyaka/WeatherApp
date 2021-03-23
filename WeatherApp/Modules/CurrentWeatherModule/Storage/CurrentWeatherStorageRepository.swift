@@ -52,10 +52,10 @@ class CurrentWeatherStorageRepository {
         let fetchRequest = NSFetchRequest<CDCurrentWeather>(entityName: "CDCurrentWeather")
         do {
             let result = try PersistentStorage.shared.context.fetch(fetchRequest).first
-            guard result != nil else {return nil}
+            guard result != nil else { return nil }
             return result
         } catch let error {
-            debugPrint(error)
+            print(error)
         }
         return nil
     }
